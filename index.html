@@ -1,261 +1,586 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 <meta charset="UTF-8">
-<title>Android TV M3U Player - Compacto</title>
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<title>IPTV Player - Temporadas</title>
 
 <style>
-body {
-  margin: 0;
-  background: #000;
-  color: #fff;
-  font-family: Arial, sans-serif;
-  overflow: hidden;
+
+*{
+  box-sizing:border-box;
 }
 
-#app {
-  display: flex;
-  width: 100vw;
-  height: 100vh;
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+
+#app{
+  display:flex;
+  flex-direction:row;
+  width:100%;
+  height:100dvh;
+  overflow:hidden;
 }
 
 /* PLAYER */
-#player-container {
-  width: 60%;
-  height: 100%;
-  background: radial-gradient(circle, #111, #000);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+#player-container{
+  width:60%;
+  height:100%;
+  background:#000;
+  position:relative;
 }
 
-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: #000;
+iframe{
+  width:100%;
+  height:100%;
+  border:none;
 }
 
-/* LISTA */
-#playlist {
-  width: 40%;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-auto-rows: 90px;   /* 👈 más compacto */
-  gap: 10px;
-  padding: 10px;
-  overflow-y: auto;
-  background: #000;
+/* RIGHT PANEL */
+
+#right{
+  width:40%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  background:#000;
+  overflow:hidden;
+}
+
+/* FILTER */
+
+#filter{
+  padding:0.8rem;
+  background:#111;
+  flex-shrink:0;
+}
+
+select{
+  width:100%;
+  padding:0.8rem;
+  background:#000;
+  color:#fff;
+  border:1px solid #333;
+  border-radius:0.6rem;
+  font-size:1rem;
+}
+
+/* PLAYLIST */
+
+#playlist{
+  flex:1;
+  overflow-y:auto;
+  padding:0.6rem;
+  display:flex;
+  flex-direction:column;
+  gap:0.6rem;
 }
 
 /* ITEM */
-.item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-radius: 10px;
-  background: #111;
-  outline: none;
-  padding: 6px;
-  transition: transform .15s ease, box-shadow .15s ease;
-  height: 80px;  /* 👈 más pequeño */
+
+.item{
+  display:flex;
+  align-items:center;
+  gap:0.8rem;
+  background:#111;
+  padding:0.5rem;
+  border-radius:0.8rem;
+  min-height:70px;
+  transition:.2s;
 }
 
-.item:focus {
-  transform: scale(1.04);
-  box-shadow: 0 0 0 3px #1e90ff;
-  z-index: 2;
+.item:focus{
+  outline:none;
+  box-shadow:0 0 0 3px #1e90ff;
+  transform:scale(1.02);
 }
 
-.item.active {
-  box-shadow: 0 0 0 3px #00bfff;
+.item img{
+  width:72px;
+  height:54px;
+  object-fit:contain;
+  background:#000;
+  border-radius:6px;
+  flex-shrink:0;
 }
 
-/* IMAGEN MÁS PEQUEÑA */
-.item img {
-  width: 70px;        /* 👈 tamaño reducido */
-  height: 60px;
-  object-fit: contain;
-  background: #000;
-  border-radius: 6px;
-  padding: 4px;
+.item span{
+  font-size:0.95rem;
+  line-height:1.3;
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
 }
 
-/* TEXTO */
-.item span {
-  flex: 1;
-  font-size: 13px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+/* FOOTER */
+
+#footer{
+  position:fixed;
+  bottom:5px;
+  left:0;
+  width:100%;
+  text-align:center;
+  font-size:11px;
+  color:#777;
+  pointer-events:none;
 }
+
+/* ANDROID / MOBILE */
+
+@media (max-width:900px){
+
+  #app{
+    flex-direction:row;
+  }
+
+  #player-container{
+    width:60%;
+    height:100%;
+  }
+
+  #right{
+    width:40%;
+    height:100%;
+  }
+
+  .item{
+    min-height:62px;
+  }
+
+  .item img{
+    width:58px;
+    height:44px;
+  }
+
+  .item span{
+    font-size:0.82rem;
+  }
+
+  select{
+    font-size:0.9rem;
+    padding:0.7rem;
+  }
+}
+
+/* ANDROID TV */
+
+@media (min-width:901px) and (max-width:1400px){
+
+  .item{
+    min-height:68px;
+  }
+
+  .item img{
+    width:70px;
+    height:50px;
+  }
+
+  .item span{
+    font-size:0.9rem;
+  }
+
+  select{
+    font-size:0.95rem;
+  }
+}
+
 </style>
 </head>
 
 <body>
 
 <div id="app">
+
+  <!-- VIDEO IZQUIERDA -->
+
   <div id="player-container">
-    <iframe id="player" allow="autoplay; fullscreen"></iframe>
+
+    <iframe
+      id="player"
+      allow="autoplay; fullscreen"
+      allowfullscreen>
+    </iframe>
+
   </div>
-  <div id="playlist"></div>
+
+  <!-- LISTA DERECHA -->
+
+  <div id="right">
+
+    <div id="filter">
+
+      <select id="seasonSelect">
+
+        <option value="all">
+          Todas las temporadas
+        </option>
+
+      </select>
+
+    </div>
+
+    <div id="playlist"></div>
+
+  </div>
+
 </div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
+<div id="footer">
+  Creado por: SUPERVECTAR ©
+</div>
 
 <script>
-const m3uUrl = "https://raw.githubusercontent.com/supervectar-coder/v-los-visitantes/refs/heads/main/V%20los%20visitantes%20retro.m3u";
+
+const m3uUrl =
+"https://raw.githubusercontent.com/supervectar-coder/v-los-visitantes/refs/heads/main/V%20los%20visitantes%20retro.m3u";
 
 let videos = [];
-let current = parseInt(localStorage.getItem("lastIndex")) || 0;
-
-let ytPlayer = null;
-let ytReady = false;
-
-function onYouTubeIframeAPIReady() {
-  ytReady = true;
-}
+let filtered = [];
+let current = 0;
 
 fetch(m3uUrl)
-  .then(r => r.text())
-  .then(parseM3U);
+.then(r => r.text())
+.then(parseM3U);
 
-function parseM3U(text) {
+/* DETECTAR TEMPORADA */
+
+function detectSeason(title){
+
+  let m;
+
+  m = title.match(/S(\d{1,2})E\d+/i);
+  if(m) return "Temporada " + parseInt(m[1]);
+
+  m = title.match(/(\d{1,2})x\d+/i);
+  if(m) return "Temporada " + parseInt(m[1]);
+
+  m = title.match(/temporada\s*(\d+)/i);
+  if(m) return "Temporada " + m[1];
+
+  return "Sin temporada";
+}
+
+/* PARSEAR M3U */
+
+function parseM3U(text){
+
   const lines = text.split(/\r?\n/);
-  let title = "", logo = "";
+
+  let title = "";
+  let logo = "";
 
   lines.forEach(line => {
-    line = line.trim();
-    if (!line) return;
 
-    if (line.startsWith("#EXTINF")) {
+    line = line.trim();
+
+    if(!line) return;
+
+    if(line.startsWith("#EXTINF")){
+
       title = line.split(",").pop();
-      const logoMatch = line.match(/tvg-logo="([^"]+)"/);
-      logo = logoMatch ? logoMatch[1] : "";
-    } 
-    else if (!line.startsWith("#")) {
+
+      const logoMatch =
+      line.match(/tvg-logo="([^"]+)"/);
+
+      logo = logoMatch
+      ? logoMatch[1]
+      : "";
+
+    }
+
+    else if(!line.startsWith("#")){
+
       let url = line;
 
-      const okMatch = url.match(/ok\.ru\/video\/([^?]+)/);
-      if (okMatch) {
-        url = "https://ok.ru/videoembed/" + okMatch[1];
+      /* OK.RU */
+
+      const ok =
+      url.match(/ok\.ru\/video\/([^?]+)/);
+
+      if(ok){
+
+        url =
+        "https://ok.ru/videoembed/" + ok[1];
       }
 
-      if (url.includes("youtube")) {
-        const id = url.includes("youtu.be/")
-          ? url.split("youtu.be/")[1]
-          : url.split("v=")[1].split("&")[0];
+      /* YOUTUBE */
+
+      if(url.includes("youtube") ||
+         url.includes("youtu.be")){
+
+        const idMatch =
+        url.match(/v=([^&]+)/);
+
+        const id =
+        url.includes("youtu.be/")
+        ? url.split("youtu.be/")[1]
+        : (idMatch ? idMatch[1] : "");
+
         url = "youtube:" + id;
       }
 
-      videos.push({ title, url, logo });
+      /* VIMEO */
+
+      if(url.includes("vimeo.com")){
+
+        const id =
+        url.split("/").pop();
+
+        url =
+        "https://player.vimeo.com/video/" + id;
+      }
+
+      const season =
+      detectSeason(title);
+
+      videos.push({
+        title,
+        url,
+        logo,
+        season
+      });
+
       title = "";
       logo = "";
     }
   });
 
-  render();
-  focusItem(current, true);
+  buildFilter();
+
+  applyFilter("all");
 }
 
-function render() {
-  const list = document.getElementById("playlist");
+/* FILTRO */
+
+function buildFilter(){
+
+  const select =
+  document.getElementById("seasonSelect");
+
+  const seasons =
+  [...new Set(videos.map(v => v.season))];
+
+  seasons.forEach(s => {
+
+    const opt =
+    document.createElement("option");
+
+    opt.value = s;
+    opt.textContent = s;
+
+    select.appendChild(opt);
+  });
+
+  select.addEventListener("change", e => {
+
+    applyFilter(e.target.value);
+  });
+}
+
+function applyFilter(season){
+
+  filtered =
+  season === "all"
+  ? videos
+  : videos.filter(v => v.season === season);
+
+  render();
+
+  if(filtered.length > 0){
+
+    play(0);
+  }
+}
+
+/* RENDER */
+
+function render(){
+
+  const list =
+  document.getElementById("playlist");
+
   list.innerHTML = "";
 
-  videos.forEach((v, i) => {
-    const div = document.createElement("div");
+  filtered.forEach((v,i) => {
+
+    const div =
+    document.createElement("div");
+
     div.className = "item";
     div.tabIndex = 0;
+
     div.onclick = () => play(i);
 
-    if (v.logo) {
-      const img = document.createElement("img");
+    if(v.logo){
+
+      const img =
+      document.createElement("img");
+
       img.src = v.logo;
-      img.onerror = () => img.style.display = "none";
+
+      img.onerror = () => {
+        img.style.display = "none";
+      };
+
       div.appendChild(img);
     }
 
-    const span = document.createElement("span");
-    span.textContent = v.title || `Episodio ${i + 1}`;
+    const span =
+    document.createElement("span");
+
+    span.textContent = v.title;
+
     div.appendChild(span);
 
     list.appendChild(div);
   });
+
+  current = 0;
+
+  setTimeout(() => {
+
+    document.querySelectorAll(".item")[0]?.focus();
+
+  },50);
 }
 
-function play(i) {
-  current = i;
-  localStorage.setItem("lastIndex", i);
+/* PLAY */
 
-  const video = videos[i];
-  const playerContainer = document.getElementById("player-container");
+function play(i){
 
-  playerContainer.innerHTML = "";
+  const video =
+  filtered[i];
 
-  if (video.url.startsWith("youtube:")) {
-    const id = video.url.split(":")[1];
+  const player =
+  document.getElementById("player");
 
-    const wait = () => {
-      if (!ytReady) return setTimeout(wait, 50);
+  if(video.url.startsWith("youtube:")){
 
-      const div = document.createElement("div");
-      div.id = "player";
-      playerContainer.appendChild(div);
+    const id =
+    video.url.split(":")[1];
 
-      ytPlayer = new YT.Player("player", {
-        videoId: id,
-        playerVars: { autoplay: 1, modestbranding: 1 },
-        events: {
-          onReady: e => e.target.setPlaybackQuality('hd1080')
-        }
-      });
-    };
+    player.src =
+    `https://www.youtube.com/embed/${id}?autoplay=1`;
 
-    wait();
   } else {
-    const iframe = document.createElement("iframe");
-    iframe.id = "player";
-    iframe.allow = "autoplay; fullscreen";
-    iframe.src = video.url + "?autoplay=1";
-    playerContainer.appendChild(iframe);
+
+    player.src =
+    video.url + "?autoplay=1";
   }
 
-  document.querySelectorAll(".item").forEach((el, idx) =>
-    el.classList.toggle("active", idx === i)
-  );
-
-  focusItem(i);
+  current = i;
 }
 
-function focusItem(i, instant=false) {
-  const item = document.querySelectorAll(".item")[i];
-  if (!item) return;
-
-  item.focus();
-  item.scrollIntoView({ behavior: instant ? "auto" : "smooth", block: "nearest" });
-}
+/* CONTROL REMOTO */
 
 document.addEventListener("keydown", e => {
-  const max = videos.length - 1;
 
-  if (e.key === "ArrowRight" && current < max) current++;
-  if (e.key === "ArrowLeft" && current > 0) current--;
-  if (e.key === "ArrowDown" && current + 1 <= max) current++;
-  if (e.key === "ArrowUp" && current - 1 >= 0) current--;
+  const max =
+  filtered.length - 1;
 
-  if (["ArrowRight","ArrowLeft","ArrowUp","ArrowDown"].includes(e.key)) {
-    e.preventDefault();
-    focusItem(current);
+  if(e.key === "ArrowDown" &&
+     current < max){
+
+    current++;
   }
 
-  if (e.key === "Enter") play(current);
+  if(e.key === "ArrowUp" &&
+     current > 0){
 
-  if (e.key === "Backspace" || e.key === "Escape") {
-    document.getElementById("player-container").innerHTML =
-      '<iframe id="player" allow="autoplay; fullscreen"></iframe>';
-    focusItem(current);
+    current--;
+  }
+
+  if(["ArrowUp","ArrowDown"]
+  .includes(e.key)){
+
+    const items =
+    document.querySelectorAll(".item");
+
+    const el =
+    items[current];
+
+    el?.focus();
+
+    el?.scrollIntoView({
+      block:"center",
+      behavior:"smooth"
+    });
+  }
+
+  if(e.key === "Enter"){
+
+    play(current);
   }
 });
+
+/* DOBLE CLICK FULLSCREEN */
+
+const playerContainer =
+document.getElementById("player-container");
+
+let lastTap = 0;
+
+playerContainer.addEventListener("click", () => {
+
+  const now = Date.now();
+
+  if(now - lastTap < 300){
+
+    toggleFullscreen();
+  }
+
+  lastTap = now;
+});
+
+/* FULLSCREEN */
+
+function toggleFullscreen(){
+
+  if(!document.fullscreenElement){
+
+    if(playerContainer.requestFullscreen){
+
+      playerContainer.requestFullscreen();
+
+    } else if(playerContainer.webkitRequestFullscreen){
+
+      playerContainer.webkitRequestFullscreen();
+
+    } else if(playerContainer.msRequestFullscreen){
+
+      playerContainer.msRequestFullscreen();
+    }
+
+  } else {
+
+    if(document.exitFullscreen){
+
+      document.exitFullscreen();
+
+    } else if(document.webkitExitFullscreen){
+
+      document.webkitExitFullscreen();
+
+    } else if(document.msExitFullscreen){
+
+      document.msExitFullscreen();
+    }
+  }
+}
+
 </script>
 
 </body>
